@@ -56,5 +56,5 @@ estreecpp.usage(ast, {
 ```
 Will output to:
 ```cpp
-window["setInterval"](window["doSomething"], 60 * 1000);
+setInterval(doSomething, 60 * 1000);
 ```

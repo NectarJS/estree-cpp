@@ -1,0 +1,93 @@
+{
+	"type": "Program",
+	"start": 0,
+	"end": 97,
+	"body": [
+	  {
+		"type": "FunctionDeclaration",
+		"start": 0,
+		"end": 32,
+		"id": {
+		  "type": "Identifier",
+		  "start": 9,
+		  "end": 11,
+		  "name": "fn"
+		},
+		"expression": false,
+		"generator": false,
+		"async": false,
+		"params": [],
+		"body": {
+		  "type": "BlockStatement",
+		  "start": 15,
+		  "end": 32,
+		  "body": []
+		}
+	  },
+	  {
+		"type": "ExpressionStatement",
+		"start": 33,
+		"end": 97,
+		"expression": {
+		  "type": "CallExpression",
+		  "start": 33,
+		  "end": 97,
+		  "callee": {
+			"type": "MemberExpression",
+			"start": 33,
+			"end": 44,
+			"object": {
+			  "type": "Identifier",
+			  "start": 33,
+			  "end": 40,
+			  "name": "console"
+			},
+			"property": {
+			  "type": "Identifier",
+			  "start": 41,
+			  "end": 44,
+			  "name": "log"
+			},
+			"computed": false,
+			"optional": false
+		  },
+		  "arguments": [
+			{
+			  "type": "Literal",
+			  "start": 45,
+			  "end": 76,
+			  "value": "Functions returns undefined: ",
+			  "raw": "'Functions returns undefined: '"
+			},
+			{
+			  "type": "BinaryExpression",
+			  "start": 78,
+			  "end": 96,
+			  "left": {
+				"type": "CallExpression",
+				"start": 78,
+				"end": 82,
+				"callee": {
+				  "type": "Identifier",
+				  "start": 78,
+				  "end": 80,
+				  "name": "fn"
+				},
+				"arguments": [],
+				"optional": false
+			  },
+			  "operator": "===",
+			  "right": {
+				"type": "Identifier",
+				"start": 87,
+				"end": 96,
+				"name": "undefined"
+			  }
+			}
+		  ],
+		  "optional": false
+		}
+	  }
+	],
+	"sourceType": "module"
+  }
