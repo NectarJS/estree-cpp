@@ -14,11 +14,14 @@ class Identifier extends Expression {
 	constructor (options) {
 		super(options)
 		this.name = options.name
-		if (GlobalIdentifier.indexOf(this.name) !== -1) {
-			this.name = `NectarCore::Global::${this.name}`
-		}
 	}
-	toString () { return this.name }
+	toString (s) {
+		if (GlobalIdentifier.indexOf(this.name) !== -1) {
+			return `${s.GlobalNamespace}${this.name}`
+		}
+		s.use(this.name)
+		return this.name
+	}
 }
 
 class Literal extends Expression {
@@ -27,30 +30,28 @@ class Literal extends Expression {
 		this.raw = options.raw
 		this.value = options.value
 		this.regex = options.regex
-		if (!this.raw) {
-			if (this.value === null) {
-				this.raw = 'null'
-			}
-			else if (typeof this.value === 'string') {
-				this.raw = `"${this.value.replace(/\\/g, '\\\\').replace(/"/g, '\\\"')}"`
-			}
-		}
-		if (GlobalIdentifier.indexOf(this.raw) !== -1) {
-			this.raw = `NectarCore::Global::${this.raw}`
-		}
 		if (this.regex) {
 			throw new Error('RegExp not implemented')
 		}
 	}
-	toString () {
-		if (this.raw) return this.raw
-		return String(this.value)
+	toString (s) {
+		if (typeof this.value === 'string') {
+			return this.raw || `"${this.value.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"')}"`
+		}
+		const raw = this.raw !== undefined ? this.raw : String(this.value)
+		return GlobalIdentifier.indexOf(raw) !== -1
+			? `${s.GlobalNamespace}${raw}`
+			: this.raw
 	}
 }
 class RegExpLiteral extends Literal {}
 
 class ThisExpression extends Expression {
-	toString () { return '(*this)' }
+	get ThisLiteral () { return '__Nectar_THIS' }
+	toString (s) {
+		s.use(this.ThisLiteral)
+		return this.ThisLiteral
+	}
 }
 
 class ArrayExpression extends Expression {
@@ -58,7 +59,11 @@ class ArrayExpression extends Expression {
 		super(options)
 		this.elements = options.elements
 	}
-	toString () { return `NectarCore::Class::Array((NectarCore::Type::vector_t){${this.elements.join(', ')}})` }
+	toString (s) {
+		if (!this.elements || !this.elements.length) return `${s.ClassNamespace}Array()`
+		const elems = this.elements.map(v => v.toString(s)).join()
+		return `${s.ClassNamespace}Array((${s.ClassNamespace}vector_t){${elems}})`
+	}
 }
 
 class ObjectExpression extends Expression {
@@ -66,7 +71,11 @@ class ObjectExpression extends Expression {
 		super(options)
 		this.properties = options.properties
 	}
-	toString () { return `NectarCore::Class::Object((NectarCore::Type::object_t){${this.properties.join(', ')}})` }
+	toString (s) {
+		if (!this.properties || !this.properties.length) return `${s.ClassNamespace}Object()`
+		const props = this.properties.map(v => v.toString(s)).join()
+		return `${s.ClassNamespace}Object((${s.ClassNamespace}object_t){${props}})`
+	}
 }
 
 class Property extends Node {
@@ -79,7 +88,9 @@ class Property extends Node {
 			throw new Error('Propetry getter/setter not implemented')
 		}
 	}
-	toString () { return `(NectarCore::Type::pair_t)({${this.key}, ${this.value})` }
+	toString (s) {
+		return `(${s.Namespace}Type::pair_t)({${this.key.toString(s)},${this.value.toString(s)})`
+	}
 }
 
 class UnaryExpression extends Expression {
@@ -89,10 +100,10 @@ class UnaryExpression extends Expression {
 		this.prefix = options.prefix
 		this.argument = options.argument
 	}
-    toString () {
+    toString (s) {
 		return this.prefix
-			? `${this.operator}${this.argument}`
-			: `${this.argument}${this.operator}`
+			? `${this.operator.toString(s)}${this.argument.toString(s)}`
+			: `${this.argument.toString(s)}${this.operator.toString(s)}`
 	}
 }
 class UpdateExpression extends UnaryExpression {}
@@ -109,17 +120,19 @@ class BinaryExpression extends Expression {
 		this.operator = options.operator
 		this.left = options.left
 		this.right = options.right
+	}
+    toString (s) {
 		if (this.operator.length === 3 && this.operator.indexOf('==') !== -1) {
-			const inverse = this.operator.indexOf('!') !== -1
-			this.operator = `<NectarCore::Operator::Strict${inverse ? 'Not' : ''}Equal>`
+			const inverse = this.operator.indexOf('!') === 0
+			this.operator = `<${s.Namespace}::Operator::Strict${inverse ? 'Not' : ''}Equal>`
 		} else if (
 			BinaryOperator.indexOf(this.operator) === -1
 			&& AssignmentOperator.indexOf(this.operator) === -1
 		) {
 			throw new Error(`Operator ${this.operator} not implemented`)
 		}
+		return `${this.left.toString(s)} ${this.operator.toString(s)} ${this.right.toString(s)}`
 	}
-    toString () { return `${this.left} ${this.operator} ${this.right}` }
 }
 class LogicalExpression extends BinaryExpression {}
 
@@ -150,25 +163,34 @@ class StaticPattern extends Expression {
 
 class MemberExpression extends StaticPattern {
 	get fields () { return ['computed', 'property', 'object'] }
-	toString () {
-		return this.computed
-			? `${this.object}[${this.property}]`
-			: `${this.object}["${this.property}"]`
+	toString (s) {
+		const object = this.object.toString(s)
+		const property = this.property.toString(s)
+		const objectStr = this.object.type === 'Literal'
+			? `(NectarCore::VAR)(${object})`
+			: object
+		
+		return `${objectStr}[${this.computed ? property : `"${property}"`}]`
 	}
 }
 
 class ConditionalExpression extends StaticPattern {
 	get fields () { return ['test', 'consequent', 'alternate'] }
-	toString () { return `${this.test} ? ${this.consequent} : ${this.alternate}` }
+	toString (s) {
+		return `(bool)(${this.test.toString(s)})`
+			+ `?(${this.consequent.toString(s)}):(${this.alternate.toString(s)})`
+	}
 }
 
 class CallExpression extends StaticPattern {
 	get fields () { return ['callee', 'arguments'] }
-	toString () { return `${this.callee}(${this.arguments.join(', ')})` }
+	toString (s) {
+		return this.callee.toString(s) + `(${this.arguments.map(v => v.toString(s)).join()})`
+	}
 }
 
 class NewExpression extends CallExpression {
-	toString () { return `new ${super.toString()}` }
+	toString (s) { return `new ${super.toString(s)}` }
 }
 
 class SequenceExpression extends Expression {
@@ -176,7 +198,7 @@ class SequenceExpression extends Expression {
 		super(options)
 		this.expressions = options.expressions
 	}
-	toString () { return this.expressions.join(', ') }
+	toString (s) { return this.expressions.map(v => v.toString(s)).join() }
 }
 
 module.exports = {

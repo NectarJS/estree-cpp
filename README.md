@@ -36,21 +36,13 @@ const ast =
 	]
 }
 estreecpp.usage(ast, {
-	wrapperClass: 'NJS::VAR', // a UDW class, required
-	globalNamespace: 'NJS', // will be derived from `wrapperClass` by default
-	indent: '\t',
-	compact: false,
-	classOverride: {
-		// `Math` and other built-ins is treated as global variables by default.
-		// However, you can override this by providing static classes/methods.
-		// (Make sure you won't override methods in runtime
-		// - otherwise it'll fallback to default and overrides will be ignored)
-		Math: 'CustomMathMethods', // Will map everything to `CustomMathMethods::`
-		window: {
-			// Will map only methods specified here
-			prompt: 'StaticWrapper::getline'
-			close: 'StaticWrapper::exit'
-		}
+	format: {
+		intent: '\t',
+		compact: false
+	},
+	stack: {
+		namespace: 'NJS::',
+		globalNamespace: 'NJS::Globals::'
 	}
 });
 ```

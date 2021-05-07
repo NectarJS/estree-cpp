@@ -8,7 +8,7 @@ class ExpressionStatement extends Statement {
 		this.expression = options.expression
 		// this.directive = options.directive
 	}
-	toString () { return `${this.expression};` }
+	toString (s) { return `${this.expression.toString(s)};` }
 }
 class Directive extends ExpressionStatement {}
 
@@ -17,12 +17,12 @@ class BlockStatement extends Statement {
 		super(options)
 		this.body = options.body
 	}
-	toString () { return `{\n${this.body.join("\n")}\n}` }
+	toString (s) { return `{\n${this.body.map(v => v.toString(s)).join("\n")}\n}` }
 }
 class FunctionBody extends BlockStatement {}
 
 class EmptyStatement extends Statement {
-	toString () { return ';' }
+	toString (s) { return ';' }
 }
 class DebuggerStatement extends EmptyStatement {}
 
@@ -31,7 +31,7 @@ class WithStatement extends BlockStatement {
 		super(options)
 		this.object = options.object
 	}
-	toString () { return `with (${this.object}) ${super.toString()}` }
+	toString (s) { return `with (${this.object.toString(s)}) ${super.toString(s)}` }
 }
 
 class ReturnStatement extends Statement {
@@ -39,7 +39,10 @@ class ReturnStatement extends Statement {
 		super(options)
 		this.argument = options.argument
 	}
-	toString () { return `return ${this.argument || 'NectarCore::Global::undefined'};` }
+	toString (s) {
+		if (!this.argument) return `return ${s.GlobalNamespace}undefined;`
+		return `return ${this.argument.toString(s)};`
+	}
 }
 
 class LabeledStatement extends Statement {
@@ -48,7 +51,7 @@ class LabeledStatement extends Statement {
 		this.label = options.label
 		this.body = options.body
 	}
-	toString () { return `${this.label}:\n${this.body}` }
+	toString (s) { return `${this.label}:\n${this.body.toString(s)}` }
 }
 
 class BreakStatement extends Statement {
@@ -56,7 +59,7 @@ class BreakStatement extends Statement {
 		super(options)
 		this.label = options.label
 	}
-	toString () { return this.label ? `break ${this.label};` : 'break;' }
+	toString (s) { return this.label ? `break ${this.label};` : 'break;' }
 }
 
 class ContinueStatement extends Statement {
@@ -64,7 +67,7 @@ class ContinueStatement extends Statement {
 		super(options)
 		this.label = options.label
 	}
-	toString () { return this.label ? `continue ${this.label};` : 'continue;' }
+	toString (s) { return this.label ? `continue ${this.label};` : 'continue;' }
 }
 
 class IfStatement extends Statement {
@@ -74,9 +77,9 @@ class IfStatement extends Statement {
 		this.consequent = options.consequent
 		this.alternate = options.alternate
 	}
-	toString () {
-		return `if ((bool)(${this.test})) {\n${this.consequent}\n}`
-			+ (this.alternate ? ` else {\n${this.alternate}\n}` : '')
+	toString (s) {
+		return `if (${this.test.toString(s)}) {\n${this.consequent.toString(s)}\n}`
+			+ (this.alternate ? ` else {\n${this.alternate.toString(s)}\n}` : '')
 	}
 }
 
@@ -86,8 +89,9 @@ class SwitchStatement extends Statement {
 		this.discriminant = options.discriminant
 		this.cases = options.cases
 	}
-	toString () {
-		return `switch (${this.discriminant}) {\n${this.cases.join('\n')}\n}`
+	toString (s) {
+		return `switch (${this.discriminant.toString(s)}) {\n`
+			+ this.cases.map(v => v.toString(s)).join('\n') + `\n}`
 	}
 }
 
@@ -97,9 +101,9 @@ class SwitchCase extends Node {
 		this.test = options.test
 		this.consequent = options.consequent
 	}
-	toString () {
-		return (this.test ? `case ${this.test}:` : 'default:')
-			+ this.consequen.join('\n')
+	toString (s) {
+		return (this.test ? `case ${this.test.toString(s)}:` : 'default:')
+			+ this.consequent.map(v => v.toString(s)).join('\n')
 	}
 }
 
@@ -108,7 +112,7 @@ class ThrowStatement extends Statement {
 		super(options)
 		this.argument = options.argument
 	}
-	toString () { return `throw ${this.argument};` }
+	toString (s) { return `throw ${this.argument.toString(s)};` }
 }
 
 class TryStatement extends Statement {
@@ -118,9 +122,10 @@ class TryStatement extends Statement {
 		this.handler = options.handler
 		this.finalizer = options.finalizer
 	}
-	toString () {
-		return `try ${this.block}${this.handler || ''}`
-			+ (this.finalizer ? `\nfinally ${this.finalizer}` : '')
+	toString (s) {
+		return `try ${this.block.toString(s)}`
+			+ (this.handler ? this.handler.toString(s) : '')
+			+ (this.finalizer ? `\nfinally ${this.finalizer.toString(s)}` : '')
 	}
 }
 
@@ -130,7 +135,7 @@ class CatchClause extends Node {
 		this.param = options.param
 		this.body = options.body
 	}
-	toString () { return `\ncatch (${this.param}) ${this.body}` }
+	toString (s) { return `\ncatch (${this.param.toString(s)}) ${this.body.toString(s)}` }
 }
 
 class WhileStatement extends Statement {
@@ -139,7 +144,7 @@ class WhileStatement extends Statement {
 		this.test = options.test
 		this.body = options.body
 	}
-	toString () { return `while ((bool)${this.test}) ${this.body}` }
+	toString (s) { return `while (${this.test.toString(s)}) ${this.body.toString(s)}` }
 }
 
 class DoWhileStatement extends Statement {
@@ -148,7 +153,7 @@ class DoWhileStatement extends Statement {
 		this.test = options.test
 		this.body = options.body
 	}
-	toString () { return `do ${this.body}\nwhile ((bool)${this.test})` }
+	toString (s) { return `do ${this.body.toString(s)}\nwhile (${this.test.toString(s)})` }
 }
 
 class ForStatement extends Statement {
@@ -159,7 +164,10 @@ class ForStatement extends Statement {
 		this.update = options.update || new EmptyStatement()
 		this.body = options.body
 	}
-	toString () { return `for (${this.init} ${this.test} ${this.update}) ${this.body}` }
+	toString (s) {
+		return `for (${this.init.toString(s)};${this.test.toString(s)};${this.update.toString(s)}) `
+			+ this.body.toString(s)
+	}
 }
 
 class ForInStatement extends Statement {
@@ -169,7 +177,10 @@ class ForInStatement extends Statement {
 		this.right = options.right
 		this.body = options.body
 	}
-	toString () { return `for (${this.left} : ${this.right}) ${this.body}` }
+	toString (s) {
+		return `for (${this.left.toString(s)} : ${this.right.toString(s)}) `
+			+ this.body.toString(s)
+	}
 }
 
 class Declaration extends Statement { }
@@ -194,8 +205,9 @@ class VariableDeclaration extends Declaration {
 		this.declarations = options.declarations
 		this.kind = options.kind || "var"
 	}
-	toString () {
-		return `NectarCore::${this.kind === 'const' ? 'CONST' : 'VAR'} ${this.declarations.join(', ')};`
+	toString (s) {
+		const type = `${s.Namespace}${this.kind === 'const' ? 'CONST' : 'VAR'}`
+		return `${type} ${this.declarations.map(v => v.toString(s)).join()};`
 	}
 }
 
@@ -203,9 +215,12 @@ class VariableDeclarator extends Node {
 	constructor (options) {
 		super(options)
 		this.id = options.id
-		this.init = options.init || "NectarCore::Global::undefined"
+		this.init = options.init
 	}
-	toString () { return `${this.id} = ${this.init}` }
+	toString (s) {
+		if (s.type === 'Identifier') s.useLiteral(this.id.name)
+		return this.id.toString(s) + (this.init ? `=${this.init.toString(s)}` : '')
+	}
 }
 
 module.exports = {

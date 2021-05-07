@@ -1,3 +1,5 @@
+const { Stack } = require('./src/_classes')
+
 const Meta = require('./src/meta')
 const Statements = require('./src/statements')
 const Expressions = require('./src/expressions')
@@ -16,9 +18,9 @@ function walkAST (ast) {
 	return ast
 }
 
-function transpile (ast) {
+function transpile (ast, { stack } = {}) {
 	ast = walkAST(ast)
-	return ast.toString()
+	return ast.toString(new Stack(stack))
 }
 
 module.exports = transpile
