@@ -165,12 +165,13 @@ class MemberExpression extends StaticPattern {
 	get fields () { return ['computed', 'property', 'object'] }
 	toString (s) {
 		const object = this.object.toString(s)
-		const property = this.property.toString(s)
+		const property = this.computed
+			? this.property.toString(s)
+			: `"${this.property.name}"`
 		const objectStr = this.object.type === 'Literal'
 			? `(NectarCore::VAR)(${object})`
 			: object
-		
-		return `${objectStr}[${this.computed ? property : `"${property}"`}]`
+		return `${objectStr}[${property}]`
 	}
 }
 

@@ -218,7 +218,7 @@ class VariableDeclarator extends Node {
 		this.init = options.init
 	}
 	toString (s) {
-		if (s.type === 'Identifier') s.useLiteral(this.id.name)
+		if (this.id.type === 'Identifier') s.useLiteral(this.id.name)
 		return this.id.toString(s) + (this.init ? `=${this.init.toString(s)}` : '')
 	}
 }
