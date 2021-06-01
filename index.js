@@ -19,8 +19,7 @@ function walkAST (ast) {
 }
 
 function transpile (ast, { stack } = {}) {
-	ast = walkAST(ast)
-	return ast.toString(new Stack(stack))
+	return walkAST(ast).toString(new Stack(stack))
 }
 
 module.exports = transpile
