@@ -35,16 +35,7 @@ const ast =
 		}
 	]
 }
-estreecpp.usage(ast, {
-	format: {
-		intent: '\t',
-		compact: false
-	},
-	stack: {
-		namespace: 'NJS::',
-		globalNamespace: 'NJS::Globals::'
-	}
-});
+estreecpp(ast)
 ```
 Will output to:
 ```cpp
