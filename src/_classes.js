@@ -1,3 +1,5 @@
+const { strictEqual } = require('assert')
+
 class Node {
 	constructor ({ type, loc = null }) {
 		this.type = type
@@ -19,22 +21,32 @@ class Stack {
 		this.literalsUsed = new Set()
 		this.variableStack = new Map()
 	}
-	useGlobal (name) { this.globalsUsed.add(name) }
-	useLiteral (name) { this.literalsUsed.add(name) }
+	useGlobal (name) {
+		strictEqual(typeof name, 'string', 'Variable name is not a string')
+		this.globalsUsed.add(name)
+	}
+	useLiteral (name) {
+		strictEqual(typeof name, 'string', 'Variable name is not a string')
+		this.literalsUsed.add(name)
+	}
 	addVariable (name) {
+		strictEqual(typeof name, 'string', 'Variable name is not a string')
 		const stack = this.variableStack.get(name) || []
 		stack.push(0)
 		if (!this.variableStack.has(name)) this.variableStack.set(name, stack)
 	}
 	useVariable (name) {
+		strictEqual(typeof name, 'string', 'Variable name is not a string')
 		const stack = this.variableStack.get(name)
 		stack[stack.length - 1]++
 	}
 	removeVariable (name) {
+		strictEqual(typeof name, 'string', 'Variable name is not a string')
 		if (!this.variableStack.has(name)) return null
 		return this.variableStack.get(name).pop()
 	}
 	use (name) {
+		strictEqual(typeof name, 'string', 'Variable name is not a string')
 		if (this.variableStack.has(name)) return this.useVariable(name)
 		if (this.literalsUsed.has(name)) return
 		this.useGlobal(name)
@@ -76,13 +88,13 @@ class Function extends Node {
 	}
 	toString (s) {
 		s.addVariable('arguments')
-		for (const name of this.params) {
+		for (const { name } of this.params) {
 			s.addVariable(name)
 		}
 		const body = this.body.toString(s)
 		let args = ''
 		for (let i = 0; i < this.params.length; i++) {
-			const name = this.params[i]
+			const { name } = this.params[i]
 			if (!s.removeVariable(name)) continue
 			args += `NectarCore::VAR ${name};\n`
 			args += `if (__Nectar_VARLENGTH > ${i}) ${name} = __Nectar_VARARGS[${i}];\n`
@@ -92,7 +104,7 @@ class Function extends Node {
 		}
 		const fn = '[&](NectarCore::VAR __Nectar_THIS, NectarCore::VAR* __Nectar_VARARGS, int __Nectar_VARLENGTH)'
 			+ ` {\n${args}${this.expression ? `return ${body};` : body.slice(1, -1)}`
-		return (this.id ? `NectarCore::VAR ${this.id} = ` : '')
+		return (this.id ? `NectarCore::VAR ${this.id.toString(s)} = ` : '')
 			+ `NectarCore::Class::Function(${fn})`
 	}
 }
