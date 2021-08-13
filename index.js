@@ -16,7 +16,11 @@ function walkAST (ast) {
 
 function transpile (code, options = {}) {
 	const stack = new Stack(options.stack ?? {})
-	const ast = Acorn.parse(code, options.parser ?? { ecmaVersion: 2020 })
+	const ast = Acorn.parse(code, {
+		ecmaVersion: 2020,
+		allowHashBang: true,
+		...(options.parser ?? {})
+	})
 	const classes = walkAST(ast)
 	return classes.toString(stack)
 }
