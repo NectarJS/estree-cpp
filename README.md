@@ -1,43 +1,24 @@
 # ESTree-CPP
 
-ESTree-CPP is a C++ code generator from ESTree AST (de-facto a standard of ECMAScript AST).
+Transpile your ECMAScript to NectarCPP using ESTree AST.
+
+### Current supported ECMAScript version: **ES5**
+
 
 ## Disclaimer
 
 This tool does *not* do any type analysis in order to transform dynamic-typed JavaScript code to static-typed C++ code. Instead, it relies on **Universal Dynamic Wrapper** (UDW) - the class that can contain any value type and do type conversion in runtime.
 
-## Example
+## Usage
 
-```js
-const ast = 
-{
-	type: "CallExpression",
-	callee: {
-		type: "Identifier",
-		name: "setInterval"
-	},
-	arguments: [
-		{
-			type: "Identifier",
-			name: "doSomething"
-		},
-		{
-			type: "BinaryExpression",
-			left: {
-				type: "Literal",
-				value: 60
-			},
-			operator: "*",
-			right: {
-				type: "Literal",
-				value: 1000
-			}
-		}
-	]
-}
-estreecpp(ast)
+CLI:
+```sh
+$ estree-cpp example.js > example.cpp
+$ estree-cpp - < example.js
 ```
-Will output to:
-```cpp
-setInterval(doSomething, 60 * 1000);
+
+Code:
+```js
+const code = `setInterval(() => console.log('Hello world!'), 60 * 1000)`
+estreecpp(code)
 ```
