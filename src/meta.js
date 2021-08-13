@@ -1,9 +1,16 @@
 const { Node, Stack } = require('./_classes')
 
 const globals = [
+	// This
 	'__Nectar_THIS', 'globalThis',
+	// Timers
 	'setImmediate', 'setTimeout', 'setInterval',
-	'window', 'console'
+	'clearImmediate', 'clearTimeout', 'clearInterval',
+	'queueMicrotask',
+	// APIs
+	'console', 'Date',
+	// Objects
+	'Array', 'Boolean', 'BigInt', 'Symbol', 'Number', 'Object'
 ]
 
 class Program extends Node {
@@ -11,7 +18,7 @@ class Program extends Node {
 		let str = ''
 		for (const variable of s.globalsUsed) {
 			if (!globals.includes(variable)) {
-				console.warn(`Unexpected global ${variable}`)
+				console.warn(`// Unexpected global ${variable}`)
 				continue
 			}
 			str += `auto &${variable} = ${s.GlobalNamespace}${variable};\n`
