@@ -1,10 +1,6 @@
+const Acorn = require('acorn')
+const Types = require('./src/index')
 const { Stack } = require('./src/_classes')
-
-const Meta = require('./src/meta')
-const Statements = require('./src/statements')
-const Expressions = require('./src/expressions')
-
-const Types = Object.assign({}, Meta, Expressions, Statements)
 
 function walkAST (ast) {
 	if (typeof ast !== 'object' || ast === null) return ast
@@ -18,8 +14,11 @@ function walkAST (ast) {
 	return ast
 }
 
-function transpile (ast, { stack } = {}) {
-	return walkAST(ast).toString(new Stack(stack))
+function transpile (code, options = {}) {
+	const stack = new Stack(options.stack ?? {})
+	const ast = Acorn.parse(code, options.parser ?? { ecmaVersion: 2020 })
+	const classes = walkAST(ast)
+	return classes.toString(stack)
 }
 
 module.exports = transpile
