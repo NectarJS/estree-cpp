@@ -188,7 +188,7 @@ class Declaration extends Statement { }
 class FunctionDeclaration extends Function {
 	constructor (options) {
 		super(options)
-		this.id = options.id
+		this.id = options.id.name
 		const body = this.body.body || []
 		if (!body.length || body[body.length - 1].type !== 'ReturnStatement') {
 			body.push(new ReturnStatement({
@@ -196,6 +196,12 @@ class FunctionDeclaration extends Function {
 				argument: null
 			}))
 		}
+	}
+	toString (s) {
+		s.addVariable(this.id)
+		const res = super.toString(s)
+		s.removeVariable(this.id)
+		return res
 	}
 }
 
