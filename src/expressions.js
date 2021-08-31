@@ -13,7 +13,12 @@ const GlobalIdentifier = ['undefined', 'null', 'Infinity', 'NaN']
 class Identifier extends Expression {
 	constructor (options) {
 		super(options)
-		this.name = options.name
+		this.name = options.name.replace(/[^[:print:]|\$/g, v => {
+			const charCode = v.charCodeAt().toString(16)
+			return charCode.length > 4
+				? `\\U${v.padStart(8, 0)}`
+				: `\\u${v.padStart(4, 0)}`
+		})
 	}
 	toString (s) {
 		if (GlobalIdentifier.indexOf(this.name) !== -1) {
