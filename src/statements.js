@@ -8,7 +8,7 @@ class ExpressionStatement extends Statement {
 		this.expression = options.expression
 		// this.directive = options.directive
 	}
-	toString (s) { return `${this.expression.toString(s)};` }
+	toString (s) { return this.expression.toString(s) }
 }
 class Directive extends ExpressionStatement {}
 
@@ -17,12 +17,12 @@ class BlockStatement extends Statement {
 		super(options)
 		this.body = options.body
 	}
-	toString (s) { return `{\n${this.body.map(v => v.toString(s)).join("\n")}\n}` }
+	toString (s) { return `{\n${this.body.map(v => v.toString(s) + ';\n').join("")}}` }
 }
 class FunctionBody extends BlockStatement {}
 
 class EmptyStatement extends Statement {
-	toString (s) { return ';' }
+	toString (s) { return '' }
 }
 class DebuggerStatement extends EmptyStatement {}
 
@@ -40,8 +40,8 @@ class ReturnStatement extends Statement {
 		this.argument = options.argument
 	}
 	toString (s) {
-		if (!this.argument) return `return ${s.GlobalNamespace}undefined;`
-		return `return ${this.argument.toString(s)};`
+		if (!this.argument) return `return ${s.GlobalNamespace}undefined`
+		return `return ${this.argument.toString(s)}`
 	}
 }
 
@@ -59,7 +59,7 @@ class BreakStatement extends Statement {
 		super(options)
 		this.label = options.label
 	}
-	toString (s) { return this.label ? `break ${this.label};` : 'break;' }
+	toString (s) { return 'break' + (this.label ? ` ${this.label}` : '') }
 }
 
 class ContinueStatement extends Statement {
@@ -67,7 +67,7 @@ class ContinueStatement extends Statement {
 		super(options)
 		this.label = options.label
 	}
-	toString (s) { return this.label ? `continue ${this.label};` : 'continue;' }
+	toString (s) { return 'continue' + (this.label ? ` ${this.label}` : '') }
 }
 
 class IfStatement extends Statement {
@@ -102,8 +102,8 @@ class SwitchCase extends Node {
 		this.consequent = options.consequent
 	}
 	toString (s) {
-		return (this.test ? `case ${this.test.toString(s)}:` : 'default:')
-			+ this.consequent.map(v => v.toString(s)).join('\n')
+		return (this.test ? `case (${this.test.toString(s)}):` : 'default:')
+			+ this.consequent.map(v => v.toString(s) + ';').join('\n')
 	}
 }
 
@@ -112,7 +112,7 @@ class ThrowStatement extends Statement {
 		super(options)
 		this.argument = options.argument
 	}
-	toString (s) { return `throw ${this.argument.toString(s)};` }
+	toString (s) { return 'throw ' + this.argument.toString(s) }
 }
 
 class TryStatement extends Statement {
@@ -165,7 +165,7 @@ class ForStatement extends Statement {
 		this.body = options.body
 	}
 	toString (s) {
-		return `for (${this.init.toString(s)};${this.test.toString(s)};${this.update.toString(s)}) `
+		return `for (${this.init.toString(s)}; ${this.test.toString(s)}; ${this.update.toString(s)}) `
 			+ this.body.toString(s)
 	}
 }
@@ -213,7 +213,7 @@ class VariableDeclaration extends Declaration {
 	}
 	toString (s) {
 		const type = `${s.Namespace}${this.kind === 'const' ? 'CONST' : 'VAR'}`
-		return `${type} ${this.declarations.map(v => v.toString(s)).join()};`
+		return `${type} ${this.declarations.map(v => v.toString(s)).join()}`
 	}
 }
 

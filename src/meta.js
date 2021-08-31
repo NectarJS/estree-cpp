@@ -34,7 +34,10 @@ class Program extends Node {
 		this.body = options.body
 	}
 	toString (s) {
-		const body = this.body.map(v => v.toString(s)).join('\n')
+		const body = this.body.map(v => {
+			const res = v.toString(s)
+			return res + (res.endsWith('}') ? '' : ';')
+		}).join('\n')
 		return this.getHeader(s) + body
 	}
 }
