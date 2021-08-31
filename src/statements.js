@@ -209,7 +209,7 @@ class VariableDeclaration extends Declaration {
 	constructor (options) {
 		super(options)
 		this.declarations = options.declarations
-		this.kind = options.kind || "var"
+		this.kind = "var" // options.kind
 	}
 	toString (s) {
 		const type = `${s.Namespace}${this.kind === 'const' ? 'CONST' : 'VAR'}`

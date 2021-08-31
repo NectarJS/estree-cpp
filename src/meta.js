@@ -1,4 +1,4 @@
-const { Node, Stack } = require('./_classes')
+const { Node } = require('./_classes')
 
 const globals = [
 	// This
@@ -6,11 +6,12 @@ const globals = [
 	// Timers
 	'setImmediate', 'setTimeout', 'setInterval',
 	'clearImmediate', 'clearTimeout', 'clearInterval',
-	'queueMicrotask',
+	'queueMicrotask', 'performance',
 	// APIs
-	'console', 'Date',
+	'console', 'Date', 'JSON', 'Math',
 	// Objects
-	'Array', 'Boolean', 'BigInt', 'Symbol', 'Number', 'Object'
+	'Array', 'Boolean', 'BigInt', 'Symbol', 'Number', 'Object',
+	'Error', 'RegExp',
 ]
 
 class Program extends Node {
@@ -21,7 +22,8 @@ class Program extends Node {
 				console.warn(`// Unexpected global ${variable}`)
 				continue
 			}
-			str += `auto &${variable} = ${s.GlobalNamespace}${variable};\n`
+			str += `${s.Namespace}VAR ${variable};\n`
+			// str += `auto &${variable} = ${s.GlobalNamespace}${variable};\n`
 		}
 		return str
 	}
