@@ -96,16 +96,16 @@ class Function extends Node {
 		for (let i = 0; i < this.params.length; i++) {
 			const { name } = this.params[i]
 			if (!s.removeVariable(name)) continue
-			args += `NectarCore::VAR ${name};\n`
+			args += `${s.Namespace}VAR ${name};\n`
 			args += `if (__Nectar_VARLENGTH > ${i}) ${name} = __Nectar_VARARGS[${i}];\n`
 		}
 		if (s.removeVariable('arguments')) {
-			args += 'NectarCore::VAR arguments = NectarCore::Class::Array(__Nectar_VARARGS, __Nectar_VARARGS + __Nectar_VARLENGTH);\n'
+			args += `${s.Namespace}VAR arguments = ${s.ClassNamespace}Array(__Nectar_VARARGS, __Nectar_VARARGS + __Nectar_VARLENGTH);\n`
 		}
-		const fn = '[&](NectarCore::VAR __Nectar_THIS, NectarCore::VAR* __Nectar_VARARGS, int __Nectar_VARLENGTH)'
+		const fn = `[&](${s.Namespace}VAR __Nectar_THIS, ${s.Namespace}VAR* __Nectar_VARARGS, int __Nectar_VARLENGTH)`
 			+ ` {\n${args}${this.expression ? `return ${body};` : body.slice(1, -1)}`
-		return (this.id ? `NectarCore::VAR ${this.id.toString(s)} = ` : '')
-			+ `NectarCore::Class::Function(${fn})`
+		return (this.id ? `${s.Namespace}VAR ${this.id.toString(s)} = ` : '')
+			+ `${s.ClassNamespace}Function(${fn})`
 	}
 }
 

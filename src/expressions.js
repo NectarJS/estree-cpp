@@ -169,7 +169,7 @@ class MemberExpression extends StaticPattern {
 			? this.property.toString(s)
 			: `"${this.property.name}"`
 		const objectStr = this.object.type === 'Literal'
-			? `(NectarCore::VAR)(${object})`
+			? `(${s.Namespace}VAR)(${object})`
 			: object
 		return `${objectStr}[${property}]`
 	}
