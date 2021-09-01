@@ -1,13 +1,6 @@
 const { Node } = require('./_classes')
 
-class Expression extends Node {
-	constructor (options) {
-		super(options)
-		if (options.optional) {
-			throw new Error('Optional chaining not implemented')
-		}
-	}
-}
+class Expression extends Node {}
 
 const GlobalIdentifier = ['undefined', 'null', 'Infinity', 'NaN']
 class Identifier extends Expression {
@@ -173,7 +166,7 @@ class StaticPattern extends Expression {
 }
 
 class MemberExpression extends StaticPattern {
-	get fields () { return ['computed', 'property', 'object'] }
+	get fields () { return ['computed', 'property', 'object', 'optional'] }
 	toString (s) {
 		const object = this.object.toString(s)
 		const property = this.computed
@@ -182,7 +175,9 @@ class MemberExpression extends StaticPattern {
 		const objectStr = this.object.type === 'Literal'
 			? `(${s.Namespace}VAR)(${object})`
 			: object
-		return `${objectStr}[${property}]`
+		return this.optional 
+			?`${objectStr}.optionalMember(${property})`
+			: `${objectStr}[${property}]`
 	}
 }
 
