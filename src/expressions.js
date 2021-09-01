@@ -58,7 +58,7 @@ class ArrayExpression extends Node {
 	toString (s) {
 		if (!this.elements || !this.elements.length) return `${s.ClassNamespace}Array()`
 		const elems = this.elements.map(v => v.toString(s)).join()
-		return `${s.ClassNamespace}Array((${s.ClassNamespace}vector_t){${elems}})`
+		return `${s.ClassNamespace}Array(${s.Namespace}Type::vector_t{${elems}})`
 	}
 }
 
@@ -70,7 +70,7 @@ class ObjectExpression extends Node {
 	toString (s) {
 		if (!this.properties || !this.properties.length) return `${s.ClassNamespace}Object()`
 		const props = this.properties.map(v => v.toString(s)).join()
-		return `${s.ClassNamespace}Object((${s.ClassNamespace}object_t){${props}})`
+		return `${s.ClassNamespace}Object(${s.Namespace}Type::object_t{${props}})`
 	}
 }
 
@@ -85,7 +85,7 @@ class Property extends Node {
 		}
 	}
 	toString (s) {
-		return `(${s.Namespace}Type::pair_t)({${this.key.toString(s)},${this.value.toString(s)})`
+		return `${s.Namespace}Type::pair_t({${this.key.toString(s)},${this.value.toString(s)}})`
 	}
 }
 
