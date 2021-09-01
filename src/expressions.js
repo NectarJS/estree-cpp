@@ -113,11 +113,17 @@ class UnaryExpression extends Expression {
 }
 class UpdateExpression extends UnaryExpression {}
 
-const BinaryOperator = [
-	"==", "!=", "<", "<=", ">", ">=", "&&", "||",
-	"<<", ">>", "+", "-", "*", "/", "%", "|", "^", "&"
-]
-const AssignmentOperator = ["=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "|=", "^=", "&="]
+const ComparisonOperators = ["==", "!=", "<", "<=", ">", ">="]
+const MathOperators = ["&&", "||", "+", "-", "*", "/", "%", "<<", ">>", "|", "^", "&"]
+const NativeOperators = ["=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>="]
+const FunctionOperators = {
+	"===": "StrictEqual",
+	"!==": "StringNotEqual",
+	"instanceof": "InstanceOf",
+	"in": "InObject",
+	">>>": "UnsignedRightShift",
+	"??": "NullishCoalescing",
+}
 
 class BinaryExpression extends Expression {
 	constructor (options) {
@@ -127,12 +133,12 @@ class BinaryExpression extends Expression {
 		this.right = options.right
 	}
     toString (s) {
-		if (this.operator.length === 3 && this.operator.indexOf('==') !== -1) {
-			const inverse = this.operator.indexOf('!') === 0
-			this.operator = `<${s.Namespace}::Operator::Strict${inverse ? 'Not' : ''}Equal>`
-		} else if (
-			BinaryOperator.indexOf(this.operator) === -1
-			&& AssignmentOperator.indexOf(this.operator) === -1
+		if (FunctionOperators[this.operator]) {
+			return `${s.Namespace}::Operator::${FunctionOperators[this.operator]}(${this.left.toString(s)}, ${this.right.toString(s)})`
+		}
+		if (
+			!ComparisonOperators.includes(this.operator)
+			&& !MathOperators.includes(this.operator)
 		) {
 			throw new Error(`Operator ${this.operator} not implemented`)
 		}
@@ -144,7 +150,7 @@ class LogicalExpression extends BinaryExpression {}
 class AssignmentExpression extends BinaryExpression {
 	constructor (options) {
 		super(options)
-		if (AssignmentOperator.indexOf(this.operator) === -1) {
+		if (this.operator.endsWith('=') && !NativeOperators.includes(this.operator)) {
 			const operator = this.operator.slice(0, -1)
 			this.operator = '='
 			this.right = new BinaryExpression({
