@@ -167,7 +167,7 @@ class MemberExpression extends StaticPattern {
 			? this.property.toString(s)
 			: `"${this.property.name}"`
 		const objectStr = this.object.type === 'Literal'
-			? `(${s.Namespace}VAR)(${object})`
+			? `(${s.Var})(${object})`
 			: object
 		return this.optional 
 			?`${objectStr}.optionalMember(${property})`

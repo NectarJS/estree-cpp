@@ -22,7 +22,7 @@ class Program extends Node {
 				console.warn(`// Unexpected global ${variable}`)
 				continue
 			}
-			str += `${s.Namespace}VAR ${variable};\n`
+			str += `${s.Var} ${variable};\n`
 			// str += `auto &${variable} = ${s.GlobalNamespace}${variable};\n`
 		}
 		return str

@@ -17,6 +17,7 @@ class Stack {
 		this.Namespace = namespace
 		this.GlobalNamespace = globalNamespace
 		this.ClassNamespace = classNamespace
+		this.Var = namespace + 'VAR'
 		this.globalsUsed = new Set()
 		this.literalsUsed = new Set()
 		this.variableStack = new Map()
@@ -96,16 +97,15 @@ class Function extends Node {
 		for (let i = 0; i < this.params.length; i++) {
 			const { name } = this.params[i]
 			if (!s.removeVariable(name)) continue
-			args += `${s.Namespace}VAR ${name};\n`
+			args += `${s.Var} ${name};\n`
 			args += `if (__Nectar_VARLENGTH > ${i}) ${name} = __Nectar_VARARGS[${i}];\n`
 		}
 		if (s.removeVariable('arguments')) {
-			args += `${s.Namespace}VAR arguments = ${s.ClassNamespace}Array(__Nectar_VARARGS, __Nectar_VARARGS + __Nectar_VARLENGTH);\n`
+			args += `${s.Var} arguments = ${s.ClassNamespace}Array(__Nectar_VARARGS, __Nectar_VARARGS + __Nectar_VARLENGTH);\n`
 		}
-		const fn = `[&](${s.Namespace}VAR __Nectar_THIS, ${s.Namespace}VAR* __Nectar_VARARGS, int __Nectar_VARLENGTH)`
-			+ ` {\n${args}${this.expression ? `return ${body};` : body.slice(1, -1)}`
-		return (this.id ? `${s.Namespace}VAR ${this.id.toString(s)} = ` : '')
-			+ `${s.ClassNamespace}Function(${fn})`
+		const fn = `${args}${this.expression ? `return ${body};` : body.slice(1, -1)}`
+		return (this.id ? `${s.Var} ${this.id.toString(s)} = ` : '')
+			+ `${s.Var}(new ${s.ClassNamespace}Function(new ${s.Namespace}Type::function_t([&](${s.Var}& __Nectar_THIS, ${s.Var}* __Nectar_VARARGS, int __Nectar_VARLENGTH) {\n${fn}})))`
 	}
 }
 
