@@ -6,7 +6,7 @@ const GlobalIdentifier = ['undefined', 'null', 'Infinity', 'NaN']
 class Identifier extends Expression {
 	constructor (options) {
 		super(options)
-		this.name = options.name.replace(/[^[:print:]|\$/g, v => {
+		this.name = options.name.replace(/[^\x00-\x7F]|\$/g, v => {
 			const charCode = v.charCodeAt().toString(16)
 			return charCode.length > 4
 				? `\\U${v.padStart(8, 0)}`
