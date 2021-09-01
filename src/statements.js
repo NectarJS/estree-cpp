@@ -202,10 +202,10 @@ class VariableDeclaration extends Node {
 	constructor (options) {
 		super(options)
 		this.declarations = options.declarations
-		this.kind = "var" // options.kind
+		this.kind = "let" // options.kind
 	}
 	toString (s) {
-		const type = `${s.Namespace}${this.kind === 'const' ? 'CONST' : 'VAR'}`
+		const type = this.kind === 'const' ? `${s.Namespace}CONST` : s.Var
 		return `${type} ${this.declarations.map(v => v.toString(s)).join()}`
 	}
 }
