@@ -1,8 +1,6 @@
 const { Node, Function } = require('./_classes')
 
-class Statement extends Node {}
-
-class ExpressionStatement extends Statement {
+class ExpressionStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.expression = options.expression
@@ -10,21 +8,18 @@ class ExpressionStatement extends Statement {
 	}
 	toString (s) { return this.expression.toString(s) }
 }
-class Directive extends ExpressionStatement {}
 
-class BlockStatement extends Statement {
+class BlockStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.body = options.body
 	}
 	toString (s) { return `{\n${this.body.map(v => v.toString(s) + ';\n').join("")}}` }
 }
-class FunctionBody extends BlockStatement {}
 
-class EmptyStatement extends Statement {
+class EmptyStatement extends Node {
 	toString (s) { return '' }
 }
-class DebuggerStatement extends EmptyStatement {}
 
 class WithStatement extends BlockStatement {
 	constructor (options) {
@@ -34,7 +29,7 @@ class WithStatement extends BlockStatement {
 	toString (s) { return `with (${this.object.toString(s)}) ${super.toString(s)}` }
 }
 
-class ReturnStatement extends Statement {
+class ReturnStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.argument = options.argument
@@ -45,7 +40,7 @@ class ReturnStatement extends Statement {
 	}
 }
 
-class LabeledStatement extends Statement {
+class LabeledStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.label = options.label
@@ -54,7 +49,7 @@ class LabeledStatement extends Statement {
 	toString (s) { return `${this.label}:\n${this.body.toString(s)}` }
 }
 
-class BreakStatement extends Statement {
+class BreakStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.label = options.label
@@ -62,7 +57,7 @@ class BreakStatement extends Statement {
 	toString (s) { return 'break' + (this.label ? ` ${this.label}` : '') }
 }
 
-class ContinueStatement extends Statement {
+class ContinueStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.label = options.label
@@ -70,7 +65,7 @@ class ContinueStatement extends Statement {
 	toString (s) { return 'continue' + (this.label ? ` ${this.label}` : '') }
 }
 
-class IfStatement extends Statement {
+class IfStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.test = options.test
@@ -83,7 +78,7 @@ class IfStatement extends Statement {
 	}
 }
 
-class SwitchStatement extends Statement {
+class SwitchStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.discriminant = options.discriminant
@@ -107,7 +102,7 @@ class SwitchCase extends Node {
 	}
 }
 
-class ThrowStatement extends Statement {
+class ThrowStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.argument = options.argument
@@ -115,7 +110,7 @@ class ThrowStatement extends Statement {
 	toString (s) { return 'throw ' + this.argument.toString(s) }
 }
 
-class TryStatement extends Statement {
+class TryStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.block = options.block
@@ -138,7 +133,7 @@ class CatchClause extends Node {
 	toString (s) { return `\ncatch (${this.param.toString(s)}) ${this.body.toString(s)}` }
 }
 
-class WhileStatement extends Statement {
+class WhileStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.test = options.test
@@ -147,7 +142,7 @@ class WhileStatement extends Statement {
 	toString (s) { return `while (${this.test.toString(s)}) ${this.body.toString(s)}` }
 }
 
-class DoWhileStatement extends Statement {
+class DoWhileStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.test = options.test
@@ -156,7 +151,7 @@ class DoWhileStatement extends Statement {
 	toString (s) { return `do ${this.body.toString(s)}\nwhile (${this.test.toString(s)})` }
 }
 
-class ForStatement extends Statement {
+class ForStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.init = options.init || new EmptyStatement()
@@ -170,7 +165,7 @@ class ForStatement extends Statement {
 	}
 }
 
-class ForInStatement extends Statement {
+class ForInStatement extends Node {
 	constructor (options) {
 		super(options)
 		this.left = options.left
@@ -183,12 +178,9 @@ class ForInStatement extends Statement {
 	}
 }
 
-class Declaration extends Statement { }
-
 class FunctionDeclaration extends Function {
 	constructor (options) {
 		super(options)
-		this.id = options.id.name
 		const body = this.body.body || []
 		if (!body.length || body[body.length - 1].type !== 'ReturnStatement') {
 			body.push(new ReturnStatement({
@@ -198,14 +190,15 @@ class FunctionDeclaration extends Function {
 		}
 	}
 	toString (s) {
-		s.addVariable(this.id)
+		if (!this.id) return super.toString(s)
+		s.addVariable(this.id.name)
 		const res = super.toString(s)
-		s.removeVariable(this.id)
+		s.removeVariable(this.id.name)
 		return res
 	}
 }
 
-class VariableDeclaration extends Declaration {
+class VariableDeclaration extends Node {
 	constructor (options) {
 		super(options)
 		this.declarations = options.declarations
@@ -231,11 +224,8 @@ class VariableDeclarator extends Node {
 
 module.exports = {
 	ExpressionStatement,
-	Directive,
 	BlockStatement,
-	FunctionBody,
 	EmptyStatement,
-	DebuggerStatement,
 	WithStatement,
 	ReturnStatement,
 	LabeledStatement,

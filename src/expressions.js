@@ -1,9 +1,7 @@
 const { Node } = require('./_classes')
 
-class Expression extends Node {}
-
 const GlobalIdentifier = ['undefined', 'null', 'Infinity', 'NaN']
-class Identifier extends Expression {
+class Identifier extends Node {
 	constructor (options) {
 		super(options)
 		this.name = options.name.replace(/[^\x00-\x7F]|\$/g, v => {
@@ -22,7 +20,7 @@ class Identifier extends Expression {
 	}
 }
 
-class Literal extends Expression {
+class Literal extends Node {
 	constructor (options) {
 		super(options)
 		this.raw = options.raw
@@ -44,7 +42,7 @@ class Literal extends Expression {
 }
 class RegExpLiteral extends Literal {}
 
-class ThisExpression extends Expression {
+class ThisExpression extends Node {
 	get ThisLiteral () { return '__Nectar_THIS' }
 	toString (s) {
 		s.use(this.ThisLiteral)
@@ -52,7 +50,7 @@ class ThisExpression extends Expression {
 	}
 }
 
-class ArrayExpression extends Expression {
+class ArrayExpression extends Node {
 	constructor (options) {
 		super(options)
 		this.elements = options.elements
@@ -64,7 +62,7 @@ class ArrayExpression extends Expression {
 	}
 }
 
-class ObjectExpression extends Expression {
+class ObjectExpression extends Node {
 	constructor (options) {
 		super(options)
 		this.properties = options.properties
@@ -91,7 +89,7 @@ class Property extends Node {
 	}
 }
 
-class UnaryExpression extends Expression {
+class UnaryExpression extends Node {
 	constructor (options) {
 		super(options)
 		this.operator = options.operator
@@ -104,7 +102,6 @@ class UnaryExpression extends Expression {
 			: `${this.argument.toString(s)}${this.operator.toString(s)}`
 	}
 }
-class UpdateExpression extends UnaryExpression {}
 
 const ComparisonOperators = ["==", "!=", "<", "<=", ">", ">="]
 const MathOperators = ["&&", "||", "+", "-", "*", "/", "%", "<<", ">>", "|", "^", "&"]
@@ -119,7 +116,7 @@ const FunctionOperators = {
 	"??": "NullishCoalescing",
 }
 
-class BinaryExpression extends Expression {
+class BinaryExpression extends Node {
 	constructor (options) {
 		super(options)
 		this.operator = options.operator
@@ -136,7 +133,6 @@ class BinaryExpression extends Expression {
 		return `${this.left.toString(s)} ${this.operator.toString(s)} ${this.right.toString(s)}`
 	}
 }
-class LogicalExpression extends BinaryExpression {}
 
 class AssignmentExpression extends BinaryExpression {
 	constructor (options) {
@@ -154,7 +150,7 @@ class AssignmentExpression extends BinaryExpression {
 	}
 }
 
-class StaticPattern extends Expression {
+class StaticPattern extends Node {
 	constructor (options) {
 		super(options)
 		for (const name of this.fields) {
@@ -198,7 +194,7 @@ class NewExpression extends CallExpression {
 	toString (s) { return `new ${super.toString(s)}` }
 }
 
-class SequenceExpression extends Expression {
+class SequenceExpression extends Node {
 	constructor (options) {
 		super(options)
 		this.expressions = options.expressions
@@ -215,10 +211,8 @@ module.exports = {
 	ObjectExpression,
 	Property,
 	UnaryExpression,
-	UpdateExpression,
 	BinaryExpression,
 	AssignmentExpression,
-	LogicalExpression,
 	MemberExpression,
 	ConditionalExpression,
 	CallExpression,
