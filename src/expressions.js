@@ -109,6 +109,7 @@ class UpdateExpression extends UnaryExpression {}
 const ComparisonOperators = ["==", "!=", "<", "<=", ">", ">="]
 const MathOperators = ["&&", "||", "+", "-", "*", "/", "%", "<<", ">>", "|", "^", "&"]
 const NativeOperators = ["=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>="]
+const AllowedOperators = [ ...NativeOperators, ...MathOperators, ...ComparisonOperators ]
 const FunctionOperators = {
 	"===": "StrictEqual",
 	"!==": "StringNotEqual",
@@ -129,10 +130,7 @@ class BinaryExpression extends Expression {
 		if (FunctionOperators[this.operator]) {
 			return `${s.Namespace}::Operator::${FunctionOperators[this.operator]}(${this.left.toString(s)}, ${this.right.toString(s)})`
 		}
-		if (
-			!ComparisonOperators.includes(this.operator)
-			&& !MathOperators.includes(this.operator)
-		) {
+		if (!AllowedOperators.includes(this.operator)) {
 			throw new Error(`Operator ${this.operator} not implemented`)
 		}
 		return `${this.left.toString(s)} ${this.operator.toString(s)} ${this.right.toString(s)}`
