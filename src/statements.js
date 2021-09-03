@@ -73,8 +73,10 @@ class IfStatement extends Node {
 		this.alternate = options.alternate
 	}
 	toString (s) {
-		return `if (${this.test.toString(s)}) {\n${this.consequent.toString(s)}\n}`
-			+ (this.alternate ? ` else {\n${this.alternate.toString(s)}\n}` : '')
+		const test = this.test.toString(s)
+		const consequent = this.consequent.toString(s)
+		const alternate = this.alternate ? `\nelse ${this.alternate.toString(s)}` : ''
+		return `if (${test}) ${consequent}${alternate}`
 	}
 }
 
@@ -216,7 +218,7 @@ class VariableDeclarator extends Node {
 	}
 	toString (s) {
 		if (this.id.type === 'Identifier') s.useLiteral(this.id.name)
-		return this.id.toString(s) + (this.init ? `=${this.init.toString(s)}` : '')
+		return this.id.toString(s) + (this.init ? ` = ${this.init.toString(s)}` : '')
 	}
 }
 

@@ -1,8 +1,8 @@
 const { Node } = require('./_classes')
 
-const globals = [
+const globals = [/*
 	// This
-	'__Nectar_THIS', 'globalThis',
+	'globalThis',
 	// Timers
 	'setImmediate', 'setTimeout', 'setInterval',
 	'clearImmediate', 'clearTimeout', 'clearInterval',
@@ -12,18 +12,18 @@ const globals = [
 	// Objects
 	'Array', 'Boolean', 'BigInt', 'Symbol', 'Number', 'Object',
 	'Error', 'RegExp',
-]
+*/]
 
 class Program extends Node {
 	getHeader (s) {
 		let str = ''
 		for (const variable of s.globalsUsed) {
 			if (!globals.includes(variable)) {
-				console.warn(`// Unexpected global ${variable}`)
+				// console.warn(`// Unexpected global ${variable}`)
 				continue
 			}
-			str += `${s.Var} ${variable};\n`
-			// str += `auto &${variable} = ${s.GlobalNamespace}${variable};\n`
+			// str += `${s.Var} ${variable};\n`
+			str += `auto &${variable} = ${s.GlobalNamespace}${variable};\n`
 		}
 		return str
 	}

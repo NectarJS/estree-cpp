@@ -83,7 +83,10 @@ class Property extends Node {
 		}
 	}
 	toString (s) {
-		return `${s.Namespace}Type::pair_t({${this.key.toString(s)},${this.value.toString(s)}})`
+		const key = this.computed
+			? this.key.toString(s)
+			: `"${this.key.name}"`
+		return `${s.Namespace}Type::pair_t{(std::string)(${key}),(${s.Var})(${this.value.toString(s)})}`
 	}
 }
 
@@ -96,8 +99,8 @@ class UnaryExpression extends Node {
 	}
     toString (s) {
 		return this.prefix
-			? `${this.operator.toString(s)}${this.argument.toString(s)}`
-			: `${this.argument.toString(s)}${this.operator.toString(s)}`
+			? `${this.operator} ${this.argument.toString(s)}`
+			: `${this.argument.toString(s)} ${this.operator}`
 	}
 }
 
@@ -105,11 +108,11 @@ const ComparisonOperators = ["==", "!=", "<", "<=", ">", ">="]
 const MathOperators = ["&&", "||", "+", "-", "*", "/", "%", "<<", ">>", "|", "^", "&"]
 const NativeOperators = ["=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>="]
 const AllowedOperators = [ ...NativeOperators, ...MathOperators, ...ComparisonOperators ]
-const FunctionOperators = {
+const FunctionBinaryOperators = {
 	"===": "StrictEqual",
 	"!==": "StringNotEqual",
 	"instanceof": "InstanceOf",
-	"in": "InObject",
+	"in": "KeyInObject",
 	">>>": "UnsignedRightShift",
 	"??": "NullishCoalescing",
 }
@@ -122,8 +125,8 @@ class BinaryExpression extends Node {
 		this.right = options.right
 	}
     toString (s) {
-		if (FunctionOperators[this.operator]) {
-			return `${s.Namespace}::Operator::${FunctionOperators[this.operator]}(${this.left.toString(s)}, ${this.right.toString(s)})`
+		if (FunctionBinaryOperators[this.operator]) {
+			return `${s.Namespace}::Operator::${FunctionBinaryOperators[this.operator]}(${this.left.toString(s)}, ${this.right.toString(s)})`
 		}
 		if (!AllowedOperators.includes(this.operator)) {
 			throw new Error(`Operator ${this.operator} not implemented`)
