@@ -65,12 +65,13 @@ class Stack {
 			.join('')
 		return `{\n${statements}}`
 	}
-	parametersToString (args) {
+
+	parametersToString (args, skip = false) {
 		args = args
 			.map(v => v.toString(this))
 			.filter(String)
 			.join()
-		return `(${args})`
+		return skip ? args : `(${args})`
 	}
 }
 

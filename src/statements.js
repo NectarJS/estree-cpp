@@ -206,7 +206,7 @@ class VariableDeclaration extends Node {
 	}
 	toString (s) {
 		const type = this.kind === 'const' ? `${s.Namespace}CONST` : s.Var
-		return `${type} ${s.parametersToString(this.declarations)}`
+		return `${type} ${s.parametersToString(this.declarations, true)}`
 	}
 }
 
