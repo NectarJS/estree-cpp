@@ -14,7 +14,7 @@ class BlockStatement extends Node {
 		super(options)
 		this.body = options.body
 	}
-	toString (s) { return `{\n${this.body.map(v => v.toString(s) + ';\n').join("")}}` }
+	toString (s) { return s.blockToString(this.body, true) }
 }
 
 class EmptyStatement extends Node {
@@ -85,8 +85,7 @@ class SwitchStatement extends Node {
 		this.cases = options.cases
 	}
 	toString (s) {
-		return `switch (${this.discriminant.toString(s)}) {\n`
-			+ this.cases.map(v => v.toString(s)).join('\n') + `\n}`
+		return `switch (${this.discriminant.toString(s)}) ` + s.blockToString(this.cases)
 	}
 }
 
@@ -97,8 +96,7 @@ class SwitchCase extends Node {
 		this.consequent = options.consequent
 	}
 	toString (s) {
-		return (this.test ? `case (${this.test.toString(s)}):` : 'default:')
-			+ this.consequent.map(v => v.toString(s) + ';').join('\n')
+		return (this.test ? `case (${this.test.toString(s)}):` : 'default:') + s.blockToString(this.consequent)
 	}
 }
 
@@ -206,7 +204,7 @@ class VariableDeclaration extends Node {
 	}
 	toString (s) {
 		const type = this.kind === 'const' ? `${s.Namespace}CONST` : s.Var
-		return `${type} ${this.declarations.map(v => v.toString(s)).join()}`
+		return `${type} ${s.parametersToString(this.declarations)}`
 	}
 }
 

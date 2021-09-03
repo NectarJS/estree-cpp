@@ -52,6 +52,26 @@ class Stack {
 		if (this.literalsUsed.has(name)) return
 		this.useGlobal(name)
 	}
+
+	blockToString (statements, force = false) {
+		if (statements.length === 1 && !force) {
+			return `${statements[0].toString(this)};\n`
+		}
+		statements = statements
+			.map(v => v.toString(this))
+			.filter(String)
+			.map(v => v.split('\n').map(v => '\t' + v).join('\n'))
+			.map(v => (v.endsWith('}') || (v += ';'), v + '\n'))
+			.join('')
+		return `{\n${statements}}`
+	}
+	parametersToString (args) {
+		args = args
+			.map(v => v.toString(this))
+			.filter(String)
+			.join()
+		return `(${args})`
+	}
 }
 
 class SourceLocation {

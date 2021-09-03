@@ -57,8 +57,7 @@ class ArrayExpression extends Node {
 	}
 	toString (s) {
 		if (!this.elements || !this.elements.length) return `${s.ClassNamespace}Array()`
-		const elems = this.elements.map(v => v.toString(s)).join()
-		return `${s.ClassNamespace}Array(${s.Namespace}Type::vector_t{${elems}})`
+		return `new ${s.ClassNamespace}Array(${s.Namespace}Type::vector_t{${s.parametersToString(this.elements, true)}})`
 	}
 }
 
@@ -69,8 +68,7 @@ class ObjectExpression extends Node {
 	}
 	toString (s) {
 		if (!this.properties || !this.properties.length) return `${s.ClassNamespace}Object()`
-		const props = this.properties.map(v => v.toString(s)).join()
-		return `${s.ClassNamespace}Object(${s.Namespace}Type::object_t{${props}})`
+		return `new ${s.ClassNamespace}Object(${s.Namespace}Type::object_t{${s.parametersToString(this.properties, true)}})`
 	}
 }
 
@@ -186,7 +184,7 @@ class ConditionalExpression extends StaticPattern {
 class CallExpression extends StaticPattern {
 	get fields () { return ['callee', 'arguments'] }
 	toString (s) {
-		return this.callee.toString(s) + `(${this.arguments.map(v => v.toString(s)).join()})`
+		return this.callee.toString(s) + s.parametersToString(this.arguments)
 	}
 }
 
@@ -200,6 +198,8 @@ class SequenceExpression extends Node {
 		this.expressions = options.expressions
 	}
 	toString (s) { return this.expressions.map(v => v.toString(s)).join() }
+	toString (s) { return s.parametersToString(this.expressions) }
+}
 }
 
 module.exports = {
