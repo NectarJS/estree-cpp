@@ -42,6 +42,42 @@ class Literal extends Node {
 }
 class RegExpLiteral extends Literal {}
 
+class TemplateLiteral extends Node {
+	constructor (options) {
+		super(options)
+		this.expressions = options.expressions
+		this.quasis = options.quasis
+	}
+	toString (s) {
+		if (!this.expressions.length) return this.quasis[0].toString()
+		let res = ""
+		for (let i = 0; i < this.quasis.length; i++) {
+			const quasi = this.quasis[i]
+			const str = quasi.toString()
+			if (quasi.tail) {
+				res += str
+				break
+			}
+			if (str) res += `${str} + `
+			res += `${this.expressions[i].toString(s)} + `
+		}
+		return `(${res})`
+	}
+	toTagged (s) {
+		const elements = this.quasis.map(String)
+		return [new ArrayExpression({ elements }), ...this.expressions]
+	}
+}
+
+class TemplateElement extends Literal {
+	constructor (options) {
+		options.raw = `"${options.value.raw}"`
+		options.value = options.value.cooked
+		super(options)
+		this.tail = options.tail
+	}
+}
+
 class ThisExpression extends Node {
 	get ThisLiteral () { return '__Nectar_THIS' }
 	toString (s) {
@@ -210,15 +246,23 @@ class SequenceExpression extends Node {
 		super(options)
 		this.expressions = options.expressions
 	}
-	toString (s) { return this.expressions.map(v => v.toString(s)).join() }
 	toString (s) { return s.parametersToString(this.expressions) }
 }
+
+class TaggedTemplateExpression extends CallExpression {
+	constructor (options) {
+		options.callee = options.tag
+		options.arguments = options.quasi.toTagged();
+		super(options)
+	}
 }
 
 module.exports = {
 	Identifier,
 	Literal,
 	RegExpLiteral,
+	TemplateLiteral,
+	TemplateElement,
 	ThisExpression,
 	ArrayExpression,
 	ObjectExpression,
