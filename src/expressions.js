@@ -126,7 +126,7 @@ class Property extends Node {
 	}
 }
 
-const UnaryOperators = ["+", "-", "~"]
+const UnaryOperators = ["+", "-", "~", "!", '++', '--']
 const FunctionUnaryOperators = {
 	"typeof": "TypeOf"
 }
