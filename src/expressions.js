@@ -103,7 +103,7 @@ class ObjectExpression extends Node {
 		this.properties = options.properties
 	}
 	toString (s) {
-		if (!this.properties || !this.properties.length) return `${s.ClassNamespace}Object()`
+		if (!this.properties || !this.properties.length) return `new ${s.ClassNamespace}Object()`
 		return `new ${s.ClassNamespace}Object(${s.Namespace}Type::object_t{${s.parametersToString(this.properties, true)}})`
 	}
 }
@@ -139,7 +139,7 @@ class UnaryExpression extends Node {
 	}
     toString (s) {
 		if (FunctionUnaryOperators[this.operator]) {
-			return `${s.Namespace}::Operator::${FunctionUnaryOperators[this.operator]}(${this.argument.toString(s)})`
+			return `${s.Namespace}Operator::${FunctionUnaryOperators[this.operator]}(${this.argument.toString(s)})`
 		}
 		if (!UnaryOperators.includes(this.operator)) {
 			throw new Error(`Operator ${this.operator} not implemented`)
@@ -172,7 +172,7 @@ class BinaryExpression extends Node {
 	}
     toString (s) {
 		if (FunctionBinaryOperators[this.operator]) {
-			return `${s.Namespace}::Operator::${FunctionBinaryOperators[this.operator]}(${this.left.toString(s)}, ${this.right.toString(s)})`
+			return `${s.Namespace}Operator::${FunctionBinaryOperators[this.operator]}(${this.left.toString(s)}, ${this.right.toString(s)})`
 		}
 		if (!AllowedOperators.includes(this.operator)) {
 			throw new Error(`Operator ${this.operator} not implemented`)
@@ -217,7 +217,7 @@ class MemberExpression extends StaticPattern {
 			? `(${s.Var})(${object})`
 			: object
 		return this.optional 
-			?`${objectStr}.optionalMember(${property})`
+			?`${objectStr}.optionalAccessor(${property})`
 			: `${objectStr}[${property}]`
 	}
 }
@@ -275,4 +275,5 @@ module.exports = {
 	CallExpression,
 	NewExpression,
 	SequenceExpression,
+	TaggedTemplateExpression
 }
