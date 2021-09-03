@@ -90,6 +90,10 @@ class Property extends Node {
 	}
 }
 
+const UnaryOperators = ["+", "-", "~"]
+const FunctionUnaryOperators = {
+	"typeof": "TypeOf"
+}
 class UnaryExpression extends Node {
 	constructor (options) {
 		super(options)
@@ -98,6 +102,12 @@ class UnaryExpression extends Node {
 		this.argument = options.argument
 	}
     toString (s) {
+		if (FunctionUnaryOperators[this.operator]) {
+			return `${s.Namespace}::Operator::${FunctionUnaryOperators[this.operator]}(${this.argument.toString(s)})`
+		}
+		if (!UnaryOperators.includes(this.operator)) {
+			throw new Error(`Operator ${this.operator} not implemented`)
+		}
 		return this.prefix
 			? `${this.operator} ${this.argument.toString(s)}`
 			: `${this.argument.toString(s)} ${this.operator}`
