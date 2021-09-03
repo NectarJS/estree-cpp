@@ -53,14 +53,11 @@ class Stack {
 		this.useGlobal(name)
 	}
 
-	blockToString (statements, force = false) {
+	blockToString (statements) {
 		if (statements.type === 'BlockStatement') {
 			statements = statements.body
 		} else if (!Array.isArray(statements)) {
 			statements = [statements]
-		}
-		if (statements.length === 1 && !force) {
-			return `${statements[0].toString(this)};\n`
 		}
 		statements = statements
 			.map(v => v.toString(this))
@@ -71,12 +68,12 @@ class Stack {
 		return `{\n${statements}}`
 	}
 
-	parametersToString (args, skip = false) {
+	parametersToString (args, noBraces = false) {
 		args = args
 			.map(v => v.toString(this))
 			.filter(String)
 			.join()
-		return skip ? args : `(${args})`
+		return noBraces ? args : `(${args})`
 	}
 }
 

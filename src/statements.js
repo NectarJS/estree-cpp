@@ -14,7 +14,7 @@ class BlockStatement extends Node {
 		super(options)
 		this.body = options.body
 	}
-	toString (s) { return s.blockToString(this.body, true) }
+	toString (s) { return s.blockToString(this.body) }
 }
 
 class EmptyStatement extends Node {
@@ -73,10 +73,11 @@ class IfStatement extends Node {
 		this.alternate = options.alternate
 	}
 	toString (s) {
-		const test = this.test.toString(s)
+		const test = `if (${this.test.toString(s)}) `
 		const consequent = s.blockToString(this.consequent)
-		const alternate = this.alternate ? ` else ${this.alternate.toString(s)}` : ''
-		return `if (${test}) ${consequent}${alternate}`
+		if (!this.alternate) return test + consequent
+		const alternate = ` else ${s.blockToString(this.alternate)}`
+		return test + consequent + alternate
 	}
 }
 
