@@ -54,6 +54,11 @@ class Stack {
 	}
 
 	blockToString (statements, force = false) {
+		if (statements.type === 'BlockStatement') {
+			statements = statements.body
+		} else if (!Array.isArray(statements)) {
+			statements = [statements]
+		}
 		if (statements.length === 1 && !force) {
 			return `${statements[0].toString(this)};\n`
 		}
@@ -126,7 +131,7 @@ class Function extends Node {
 		}
 		const fn = `${args}${this.expression ? `return ${body};` : body.slice(1, -1)}`
 		return (this.id ? `${s.Var} ${this.id.toString(s)} = ` : '')
-			+ `${s.Var}(new ${s.ClassNamespace}Function(new ${s.Namespace}Type::function_t([&](${s.Var}& __Nectar_THIS, ${s.Var}* __Nectar_VARARGS, int __Nectar_VARLENGTH) {\n${fn}})))`
+			+ `${s.Var}(new ${s.ClassNamespace}Function(new ${s.Namespace}Type::function_t{[&](${s.Var}& __Nectar_THIS, ${s.Var}* __Nectar_VARARGS, int __Nectar_VARLENGTH) -> ${s.Var} {\n${fn}}}))`
 	}
 }
 

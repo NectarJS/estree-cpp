@@ -74,8 +74,8 @@ class IfStatement extends Node {
 	}
 	toString (s) {
 		const test = this.test.toString(s)
-		const consequent = this.consequent.toString(s)
-		const alternate = this.alternate ? `\nelse ${this.alternate.toString(s)}` : ''
+		const consequent = s.blockToString(this.consequent)
+		const alternate = this.alternate ? ` else ${this.alternate.toString(s)}` : ''
 		return `if (${test}) ${consequent}${alternate}`
 	}
 }
