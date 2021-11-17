@@ -1,10 +1,6 @@
 const Acorn = require('acorn')
 const Types = require('./src/index')
 const { Stack } = require('./src/_classes')
-const Aliases = require('./src/_aliases')
-for (const alias in Aliases) {
-	Types[alias] = Types[Aliases[alias]]
-}
 
 function walkAST (ast) {
 	if (typeof ast !== 'object' || ast === null) return ast
