@@ -25,7 +25,9 @@ estreecpp(code, {
 		// C++ native namespaces
 		namespace: 'NectarCore::',
 		globalNamespace: `NectarCore::Global::`,
-		classNamespace: `NectarCore::Class::`
+		classNamespace: `NectarCore::Class::`,
+		// Supplied non-builtin global variables
+		globalsUsed: []
 	},
 	parser: {
 		// Options passed to Acorn

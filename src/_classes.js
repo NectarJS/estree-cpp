@@ -12,13 +12,14 @@ class Stack {
 	constructor ({
 		namespace = 'NectarCore::',
 		globalNamespace = `${namespace}Global::`,
-		classNamespace = `${namespace}Class::`
+		classNamespace = `${namespace}Class::`,
+		globalsUsed = []
 	} = {}) {
 		this.Namespace = namespace
 		this.GlobalNamespace = globalNamespace
 		this.ClassNamespace = classNamespace
 		this.Var = namespace + 'VAR'
-		this.globalsUsed = new Set()
+		this.globalsUsed = new Set(globalsUsed)
 		this.literalsUsed = new Set()
 		this.variableStack = new Map()
 	}

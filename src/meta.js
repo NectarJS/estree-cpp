@@ -19,7 +19,7 @@ class Program extends Node {
 		let str = ''
 		for (const variable of s.globalsUsed) {
 			if (!globals.includes(variable)) {
-				// console.warn(`// Unexpected global ${variable}`)
+				console.warn(`// Unexpected global ${variable}`)
 				continue
 			}
 			// str += `${s.Var} ${variable};\n`
