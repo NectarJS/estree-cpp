@@ -1,6 +1,6 @@
 const { Node } = require('./_classes')
 
-const globals = [/*
+const globals = [
 	// This
 	'globalThis',
 	// Timers
@@ -12,7 +12,7 @@ const globals = [/*
 	// Objects
 	'Array', 'Boolean', 'BigInt', 'Symbol', 'Number', 'Object',
 	'Error', 'RegExp',
-*/]
+]
 
 class Program extends Node {
 	getHeader (s) {
