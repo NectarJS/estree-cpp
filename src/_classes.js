@@ -120,13 +120,13 @@ class Function extends Node {
 		for (let i = 0; i < this.params.length; i++) {
 			const { name } = this.params[i]
 			if (!s.removeVariable(name)) continue
-			args += `${s.Var} ${name};\n`
-			args += `if (__Nectar_VARLENGTH > ${i}) ${name} = __Nectar_VARARGS[${i}];\n`
+			args += `\t${s.Var} ${name};\n`
+			args += `\tif (__Nectar_VARLENGTH > ${i}) ${name} = __Nectar_VARARGS[${i}];\n`
 		}
 		if (s.removeVariable('arguments')) {
-			args += `${s.Var} arguments = ${s.ClassNamespace}Array(__Nectar_VARARGS, __Nectar_VARARGS + __Nectar_VARLENGTH);\n`
+			args += `\t${s.Var} arguments = ${s.ClassNamespace}Array(__Nectar_VARARGS, __Nectar_VARARGS + __Nectar_VARLENGTH);\n`
 		}
-		const fn = `${args}${this.expression ? `return ${body};` : body.slice(1, -1)}`
+		const fn = `${args}${this.expression ? `\treturn ${body};` : body.slice(1, -1)}`
 		return (this.id ? `${s.Var} ${this.id.toString(s)} = ` : '')
 			+ `${s.Var}(new ${s.ClassNamespace}Function(new ${s.Namespace}Type::function_t{[&](${s.Var}& __Nectar_THIS, ${s.Var}* __Nectar_VARARGS, int __Nectar_VARLENGTH) -> ${s.Var} {\n${fn}}}))`
 	}

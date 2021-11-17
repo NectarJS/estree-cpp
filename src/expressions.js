@@ -92,7 +92,7 @@ class ArrayExpression extends Node {
 		this.elements = options.elements
 	}
 	toString (s) {
-		if (!this.elements || !this.elements.length) return `${s.ClassNamespace}Array()`
+		if (!this.elements || !this.elements.length) return `new ${s.ClassNamespace}Array()`
 		return `new ${s.ClassNamespace}Array(${s.Namespace}Type::vector_t{${s.parametersToString(this.elements, true)}})`
 	}
 }
@@ -119,10 +119,7 @@ class Property extends Node {
 		}
 	}
 	toString (s) {
-		const key = this.computed
-			? this.key.toString(s)
-			: `"${this.key.name}"`
-		return `${s.Namespace}Type::pair_t{(std::string)(${key}),(${s.Var})(${this.value.toString(s)})}`
+		return `${s.Namespace}Type::pair_t{(std::string)(${this.key.toString(s)}),(${s.Var})(${this.value.toString(s)})}`
 	}
 }
 
@@ -238,7 +235,7 @@ class CallExpression extends StaticPattern {
 }
 
 class NewExpression extends CallExpression {
-	toString (s) { return `new ${super.toString(s)}` }
+	toString (s) { return `__Nectar_NEW(${super.toString(s)})` }
 }
 
 class SequenceExpression extends Node {
