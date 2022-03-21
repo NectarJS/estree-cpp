@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Transpile from JS to NectarCPP using ESTree",
   "main": "index.js",
+  "type": "module",
   "bin": {
     "estree-cpp": "cli.js",
     "estreecpp": "cli.js"

@@ -1,7 +1,6 @@
-#!/usr/bin/env node
-const estreecpp = require('./index')
-const { once } = require('events')
-const { createReadStream, createWriteStream } = require('fs')
+import estreecpp from "./index.js"
+import { once } from "events"
+import { createReadStream, createWriteStream } from "fs"
 const [,, inputFile, outputFile] = process.argv
 
 if (!inputFile) {

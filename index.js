@@ -1,28 +1,26 @@
-const Acorn = require('acorn')
-const Types = require('./src/index')
-const { Stack } = require('./src/_classes')
+import { parse } from "acorn"
+import WalkAST from "./src/walker.js"
+import OptimizeAST from "./src/optimizer.js"
+import GenerateCode from "./src/generator.js"
 
-function walkAST (ast) {
-	if (typeof ast !== 'object' || ast === null) return ast
-	for (const key in ast) {
-		ast[key] = walkAST(ast[key])
-	}
-	if (ast.type) {
-		if (!Types[ast.type]) throw new Error(`Type ${ast.type} not defined`)
-		ast = new Types[ast.type](ast)
-	}
-	return ast
-}
-
-function transpile (code, options = {}) {
-	const stack = new Stack(options.stack ?? {})
-	const ast = Acorn.parse(code, {
-		ecmaVersion: 2020,
-		allowHashBang: true,
+export default function Transpile (code, options = {}) {
+	const ast = parse(code, {
+		ecmaVersion: "latest",
 		...(options.parser ?? {})
 	})
-	const classes = walkAST(ast)
-	return classes.toString(stack)
+	try {
+		WalkAST(ast)
+	} catch (cause) {
+		throw new Error('Failed to transpile', { cause })
+	}
+	try {
+		OptimizeAST(ast)
+	} catch (cause) {
+		console.warn(new Error('Failed to optimize', { cause }))
+	}
+	try {
+		return GenerateCode(ast)
+	} catch (cause) {
+		throw new Error('Code generation failed', { cause })
+	}
 }
-
-module.exports = transpile
