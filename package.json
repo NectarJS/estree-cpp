@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/NectarJS/estree-cpp#readme",
   "dependencies": {
-    "acorn": "^8.4.1"
+    "acorn": "^8.7.0",
+    "acorn-walk": "^8.2.0"
   }
 }
