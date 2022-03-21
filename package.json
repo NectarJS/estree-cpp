@@ -1,12 +1,12 @@
 {
   "name": "estree-cpp",
-  "version": "0.1.0",
-  "description": "Transpile from JS to NectarCPP using ESTree",
+  "version": "0.2.0",
+  "description": "JavaScript to NectarCPP transpiler",
   "main": "index.js",
   "type": "module",
   "bin": {
     "estree-cpp": "cli.js",
-    "estreecpp": "cli.js"
+    "estree": "cli.js"
   },
   "scripts": {
     "test": "node cli.js example.js"
