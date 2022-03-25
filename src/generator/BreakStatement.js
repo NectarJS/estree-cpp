@@ -1,3 +1,3 @@
 export function BreakStatement () {
-	return "break"
+  return 'break'
 }

@@ -1,3 +1,3 @@
 export function Program (leaf) {
-	leaf.type = "BlockStatement"
+  leaf.type = 'BlockStatement'
 }

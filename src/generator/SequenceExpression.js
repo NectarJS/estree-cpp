@@ -1,3 +1,3 @@
 export function SequenceExpression (leaf, toString) {
-	return leaf.expressions.map(toString).join()
+  return leaf.expressions.map(toString).join()
 }

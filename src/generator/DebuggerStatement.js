@@ -1,3 +1,3 @@
 export function DebuggerStatement () {
-	return "std::raise(SIGTRAP)"
+  return 'std::raise(SIGTRAP);'
 }

@@ -1,3 +1,3 @@
 export function ContinueStatement () {
-	return "continue"
+  return 'continue;'
 }
